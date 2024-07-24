@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반응형 메뉴와 슬라이드</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <style>
+        @charset "utf-8";
+
+* {
+    margin:0; padding:0; box-sizing: border-box;
+}        
+#layout {
+    max-width:1000px; margin:auto; position:relative; border:0.1pt solid transparent;
+}
+h1 {display: none;}
+header {
+    display: flex; align-items: flex-start; position:absolute; width:100%; z-index: 2; top:10px;
+}
+#logo {flex:1; margin-right:8%;}
+#logo img {display:block; width:90%;}
+nav {
+    background: gold; flex:5; display: flex; flex-direction: column;
+    margin-top: 20px; line-height: 250%; text-align: center; 
+    height:0px; overflow:hidden; transition: height 0.7s;      
+    
+}
+header button.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+    margin-top:15px; margin-left:4%;
+}
+/*******************/
+#slideArea {
+    position: relative; overflow: hidden;  /*  (블럭설정후, alt+shift+A) */
+    margin-top:90px;
+}
+h2 {
+    position:absolute; padding:20px 40px; background: rgba(255,255,255,0.85);
+    border-radius: 10px; box-shadow: 0 0 10px black; z-index: 1;
+}
+#slide {
+    width:300%; display: flex; position:relative; left:-100%;
+}
+#slide img {
+    flex:1; width:100vw;
+}
+
+#circle {
+    position: absolute; width:100%; bottom:0;
+    display: flex; justify-content: center;
+}
+#circle div {
+    width:20px; height:20px; border-radius: 50%; background: white;
+    box-shadow:0 0 10px black; margin:10px;
+}
+#circle div.red  { background:red;}
+
+#arrow {   
+    position:absolute; width:100%; height:100%; top:0; 
+    display:flex; justify-content: space-between; z-index: 1;
+}
+#arrow button.material-symbols-outlined {
+    position:relative;
+    border: none; font-size:4rem;
+}
+
+/*******큰 기계장치에서 적용됨 (최소넓이:1024픽셀) 1024부터 점점 커질때 모두 적용 ********/
+@media(min-width:1024px) {
+    header {align-items: center;}
+    nav {flex-direction: row; margin-top:0; height:auto;}
+    nav a {flex:1; border:1px solid red;}
+    header button.material-symbols-outlined {
+        display:none;
+    }
+    #slideArea {
+        margin-top: 170px;
+    }
+    h2 {
+        padding:50px 100px;
+    }
+}
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", ()=>{
+
+const btn = document.getElementsByClassName("material-symbols-outlined")[0];
+const nav = document.getElementsByTagName('nav')[0];
+//슬라이드 부분
+const slideArea = document.getElementById("slideArea");
+const slide = document.getElementById("slide"); 
+
+//슬라이드에 있는 양쪽 화살표[
+const arrLeft = document.querySelectorAll("#arrow button")[0];
+const arrRight = document.querySelectorAll("#arrow button")[1];
+//alert(arrLeft + "\n"+arrRight );
+
+
+//slide의 범위설정을 위해.
+let sw = slideArea.clientWidth; //슬라이드보이는 곳의 넓이
+slide.style.width = sw * 3 + "px"; //슬라이드 넓이
+//alert(sw + "\n" + slide.style.width );
+
+//<h2>의 위치설정
+let sh = slideArea.clientHeight;
+let h2 = document.getElementsByTagName('h2')[0];
+let h2Width = h2.clientWidth;
+let h2Height= h2.clientHeight;
+
+let sww = (sw - h2Width) / 2;            
+h2.style.left = sww + "px";
+let shh = Math.trunc(( sh - h2Height ) /2 );
+h2.style.top = shh + "px";     
+
+let menu = () => {
+    if( nav.clientHeight == 0 )  nav.style.height = "200px";
+    else nav.style.height = "0px";
+}
+
+let ss = () => {
+    if( window.innerWidth>=1024 )  nav.style.height = "auto";
+    else      nav.style.height = 0; 
+    pos1 =   sw* (-2) + "px"; 
+
+    //<h2>의 위치설정
+    sh = slideArea.clientHeight;
+    h2 = document.getElementsByTagName('h2')[0];
+    h2Width = h2.clientWidth;
+    h2Height= h2.clientHeight;
+
+    sww = (sw - h2Width) / 2;
+    h2.style.left = sww + "px";
+    shh = Math.trunc(( sh - h2Height ) /2 );
+    h2.style.top = shh + "px";  
+}
+
+let pos1 =  (sw) * (-2) + "px"; 
+
+
+const circleArea = document.getElementById('circle');//동그라미3개의 부모영역    
+
+let i = 0; //빨간동그라미 위치표시
+const toLeftMove = () => {
+    arrLeft.disabled = true;
+    arrRight.disabled = true;
+
+    slide.style.transition = "left 1s";
+    slide.style.left = pos1;        
+    
+    //동그라미에서 빨간색을 제거       
+    document.getElementsByClassName('red')[0].classList.remove('red'); //초기값으로 index0이 빨간색을 지웠다
+    i = (i+1) % 3; // [1,2,0]
+    circleArea.children[i].classList.add('red'); //index i에 빨간색을 넣는다.
+    console.log(i);
+    setTimeout( po1, 1000  );
+}
+
+const po1 = () => {
+    slide.style.transition = "none"; 
+    slide.style.left =  sw * (-1) + "px";
+    slide.append( slide.firstElementChild );  
+    arrLeft.disabled = false;
+    arrRight.disabled = false;     
+}
+
+const toRightMove = () => {   
+    arrLeft.disabled = true;
+    arrRight.disabled = true;
+
+    slide.style.transition = "left 1s";
+    slide.style.left = 0;        
+    
+    //동그라미에서 빨간색을 제거        
+    document.getElementsByClassName('red')[0].classList.remove('red');
+    i =(i+2) % 3; //[2,0,1]
+    console.log(i);
+    circleArea.children[i].classList.add('red'); 
+
+    setTimeout( po2, 1000  );
+}
+
+const po2 = () => {
+    slide.style.transition = "none"; 
+    slide.style.left =  sw * (-1) + "px";
+    slide.prepend( slide.lastElementChild );
+    arrLeft.disabled = false;
+    arrRight.disabled = false;         
+}
+           
+btn.addEventListener("click" , menu );
+window.addEventListener("resize" , ss  );
+
+/*************setInterval( move , 2500);
+let x1 = 0; //터치 시작점
+let x2 = 0; //터치 끝점
+slideArea.addEventListener("touchstart" ,   e =>{
+    x1 = e.touches[0].clientX;
+
+    slideArea.addEventListener("touchend" , zz = e => {
+        x2 = e.changedTouches[0].clientX;
+       
+        slideArea.removeEventListener("touchend" , zz); //한번만 실행되도록한다.
+        
+        if (x1 > x2 )   toLeftMove();
+        if (x1 < x2 )   toRightMove();
+    });
+}); **********************/
+
+arrLeft.addEventListener("click" , toRightMove);
+arrRight.addEventListener("click" , toLeftMove);
+
+});//////////////////////// 마지막 부분
+    </script>
+</head>
+
+<body>
+    <section id="layout">
+        <h1>상단 메뉴와 슬라이드</h1>
+        <header>
+            <a href="#" id="logo"><img src="images/고양이.png" alt="로고"></a>
+            <nav>
+                <a href="#">메뉴</a>
+                <a href="#">메뉴</a>
+                <a href="#">메뉴</a>
+                <a href="#">메뉴</a>
+                <a href="#">메뉴</a>
+            </nav>
+            <button type="button" class="material-symbols-outlined">menu</button>
+        </header>
+        <section id="slideArea">
+            <h2>라인컴퓨터아트학원에<br>오신 것을 환영합니다.</h2>
+            <div id="slide">
+                <img src="images/s1.jpg" alt="슬라이드">
+                <img src="images/s2.jpg" alt="슬라이드">
+                <img src="images/s3.jpg" alt="슬라이드">
+            </div>
+            <div id="circle">
+                <div class="red"></div><div></div><div></div>
+            </div>
+            <div id="arrow">
+                <button type="button" class="material-symbols-outlined">arrow_back_ios</button>
+                <button type="button" class="material-symbols-outlined">arrow_forward_ios</button>
+            </div>
+        </section>
+    </section>
+</body>
+</html>
